@@ -1,4 +1,5 @@
 {-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric      #-}
 
@@ -12,12 +13,15 @@ import Data.List (foldl', intersperse)
 import Data.String
 import Data.Typeable (Typeable)
 import Data.Word
-import Network.Socket
 import Numeric (showHex, showInt)
 import System.ByteOrder
 import Text.Appar.String
 import GHC.Enum (succError,predError)
 import GHC.Generics
+
+#ifndef ghcjs_HOST_OS
+import Network.Socket
+#endif
 
 ----------------------------------------------------------------
 
@@ -590,6 +594,7 @@ ip4Embedded = try (do colon2
 -- HostAddress and HostAddress6
 --
 
+#ifndef ghcjs_HOST_OS
 -- | The 'fromHostAddress' function converts 'HostAddress' to 'IPv4'.
 fromHostAddress :: HostAddress -> IPv4
 fromHostAddress addr4
@@ -610,6 +615,8 @@ fromHostAddress6 = IP6
 toHostAddress6 :: IPv6 -> HostAddress6
 toHostAddress6 (IP6 addr6) = addr6
 
+#endif
+
 fixByteOrder :: Word32 -> Word32
 fixByteOrder s = d1 .|. d2 .|. d3 .|. d4
   where
@@ -624,6 +631,7 @@ ipv4ToIPv6 ip = toIPv6b [0,0,0,0,0,0,0,0,0,0,0xff,0xff,i1,i2,i3,i4]
   where
     [i1,i2,i3,i4] = fromIPv4 ip
 
+#ifndef ghcjs_HOST_OS
 -- | Convert 'SockAddr' to 'IP'.
 --
 --   Since: 1.7.4.
@@ -638,3 +646,4 @@ fromSockAddr _                          = Nothing
 toSockAddr :: (IP, PortNumber) -> SockAddr
 toSockAddr (IPv4 addr4, pn) = SockAddrInet  pn   (toHostAddress  addr4)
 toSockAddr (IPv6 addr6, pn) = SockAddrInet6 pn 0 (toHostAddress6 addr6) 0
+#endif

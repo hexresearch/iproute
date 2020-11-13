@@ -39,7 +39,8 @@ Library
                       , byteorder
                       , bytestring
                       , containers
-                      , network
+  if !impl(ghcjs -any)
+     Build-Depends:     network
   if impl(ghc < 8.0)
      Build-Depends:     semigroups >= 0.17
   if impl(ghc >= 8)
@@ -56,7 +57,8 @@ Test-Suite doctest
                       , appar
                       , byteorder
                       , bytestring
-                      , network
+  if !impl(ghcjs -any)
+     Build-Depends:     network
 
 Test-Suite spec
   Type:                 exitcode-stdio-1.0
@@ -74,9 +76,10 @@ Test-Suite spec
                       , byteorder
                       , bytestring
                       , containers
-                      , network
                       , safe
                       , iproute
+  if !impl(ghcjs -any)
+     Build-Depends:     network
   if impl(ghc < 8.0)
      Build-Depends:     semigroups >= 0.17
 
